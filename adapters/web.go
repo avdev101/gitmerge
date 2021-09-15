@@ -54,7 +54,7 @@ func (s Server) handleMergeRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if payload.ObjectAttributes.isOpen() {
+	if !payload.ObjectAttributes.isOpen() {
 		return
 	}
 
