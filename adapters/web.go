@@ -14,7 +14,7 @@ type Server struct {
 }
 
 type ObjectAttributes struct {
-	SourceProjectId string `json:"source_project_id"`
+	SourceProjectId int    `json:"source_project_id"`
 	Action          string `json:"action"`
 	IID             int    `json:"iid"`
 }
@@ -33,7 +33,7 @@ func NewMergeRequestPayload(r *http.Request) (MergeRequestPayload, error) {
 
 func (p MergeRequestPayload) createLinkIssueCommand() core.LinkIssueCommand {
 	cmd := core.LinkIssueCommand{
-		ProjectID: p.ObjectAttributes.SourceProjectId,
+		ProjectID: fmt.Sprint(p.ObjectAttributes.SourceProjectId),
 		ID:        p.ObjectAttributes.IID,
 	}
 	return cmd
