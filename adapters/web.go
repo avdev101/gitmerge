@@ -19,6 +19,10 @@ type ObjectAttributes struct {
 	IID             int    `json:"iid"`
 }
 
+func (attrs ObjectAttributes) isOpen() bool {
+	return attrs.Action == "" || attrs.Action == "open"
+}
+
 type MergeRequestPayload struct {
 	ObjectAttributes ObjectAttributes `json:"object_attributes"`
 }
@@ -50,7 +54,7 @@ func (s Server) handleMergeRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if payload.ObjectAttributes.Action != "open" {
+	if payload.ObjectAttributes.isOpen() {
 		return
 	}
 
