@@ -22,4 +22,10 @@ func main() {
 	}
 
 	fmt.Println(merge.Description)
+
+	merge.Description = "yyy"
+	err = store.SaveDescription(merge)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
