@@ -17,7 +17,8 @@ func (s GitlabStore) GetMerge(projectId string, id int) (core.MergeRequest, erro
 
 	fmt.Printf("get merge for project: %v and id: %v\n", projectId, id)
 
-	url := fmt.Sprintf("%v/projects/:%v/merge_requests/%v", s.BasePath, projectId, id)
+	url := fmt.Sprintf("%v/projects/%v/merge_requests/%v", s.BasePath, projectId, id)
+	fmt.Println(url)
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -33,6 +34,9 @@ func (s GitlabStore) GetMerge(projectId string, id int) (core.MergeRequest, erro
 	if err != nil {
 		return result, err
 	}
+
+	//body, _ := ioutil.ReadAll(resp.Body)
+	//fmt.Println(string(body))
 
 	err = json.NewDecoder(resp.Body).Decode(&result)
 
