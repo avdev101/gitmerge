@@ -1,9 +1,11 @@
 package adapters
 
 import (
+	"bytes"
 	"encoding/json"
 	"eremeev/gitmerge/core"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 )
 
@@ -47,7 +49,45 @@ func (s GitlabStore) GetMerge(projectId string, id int) (core.MergeRequest, erro
 	return result, nil
 }
 
+type UpdatePayload struct {
+	Description string `json:"description"`
+}
+
 func (s GitlabStore) SaveDescription(merge core.MergeRequest) error {
-	fmt.Println("save description")
+
+	fmt.Println("==== save ====")
+
+	url := fmt.Sprintf("%v/projects/%v/merge_requests/%v", s.BasePath, merge.ProjectID, merge.ID)
+	fmt.Println(url)
+
+	payload := UpdatePayload{
+		Description: merge.Description,
+	}
+
+	payloadBuf := new(bytes.Buffer)
+	err := json.NewEncoder(payloadBuf).Encode(payload)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest("PUT", url, payloadBuf)
+
+	if err != nil {
+		return err
+	}
+
+	req.Header.Add("Authorization", fmt.Sprintf("Bearer %v", s.Token))
+	req.Header.Add("content-type", "application/json")
+
+	client := http.Client{}
+	resp, err := client.Do(req)
+
+	if err != nil {
+		return err
+	}
+
+	body, _ := ioutil.ReadAll(resp.Body)
+	fmt.Println(string(body))
+
 	return nil
 }
