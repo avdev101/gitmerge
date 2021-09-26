@@ -3,8 +3,8 @@ package core
 import "fmt"
 
 type MergeRequest struct {
-	ProjectID    string
-	ID           int
+	ProjectID    int `json:"project_id"`
+	ID           int `json:"iid"`
 	Description  string
 	SourceBranch string
 }
