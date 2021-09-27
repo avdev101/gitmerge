@@ -10,10 +10,10 @@ type MergeRequest struct {
 }
 
 func (m MergeRequest) getIssueId() int {
-	return 123
+	return 2
 }
 
-func (m MergeRequest) LinkIssue() {
+func (m *MergeRequest) LinkIssue() {
 	issueId := m.getIssueId()
 	m.Description = fmt.Sprintf("#%v\n\n%v", issueId, m.Description)
 }
