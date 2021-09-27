@@ -55,6 +55,7 @@ func (s Server) handleMergeRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !payload.ObjectAttributes.isOpen() {
+		fmt.Println("=== skip ===")
 		return
 	}
 
