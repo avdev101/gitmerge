@@ -12,7 +12,22 @@ func TestGetIssueId(t *testing.T) {
 
 	issueId := merge.getIssueId()
 
-	if issueId != 123 {
+	if issueId != "123" {
+		t.Errorf("expect %v get %v", 123, issueId)
+	}
+}
+
+func TestNoIssueIdMatch(t *testing.T) {
+	merge := MergeRequest{
+		ProjectID:    1,
+		ID:           2,
+		Description:  "description",
+		SourceBranch: "feature/issue/test123",
+	}
+
+	issueId := merge.getIssueId()
+
+	if issueId != "" {
 		t.Errorf("expect %v get %v", 123, issueId)
 	}
 }
