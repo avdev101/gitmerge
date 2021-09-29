@@ -1,6 +1,9 @@
 package core
 
-import "fmt"
+import (
+	"fmt"
+	"regexp"
+)
 
 type MergeRequest struct {
 	ProjectID    int `json:"project_id"`
@@ -9,8 +12,15 @@ type MergeRequest struct {
 	SourceBranch string
 }
 
-func (m MergeRequest) getIssueId() int {
-	return 2
+func (m MergeRequest) getIssueId() string {
+	re := regexp.MustCompile("issue/([0-9]+)")
+	match := re.FindStringSubmatch(m.SourceBranch)
+
+	if len(match) == 2 {
+		return match[1]
+	}
+
+	return ""
 }
 
 func (m *MergeRequest) LinkIssue() {
