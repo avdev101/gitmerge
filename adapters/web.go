@@ -2,77 +2,48 @@ package adapters
 
 import (
 	"encoding/json"
-	"eremeev/gitmerge/core"
 	"fmt"
 	"log"
 	"net/http"
 )
 
-type Server struct {
-	Port         int
-	MergeService core.IMergeService
+func newWebhookCommand(r *http.Request) (WebHookCommand, error) {
+	var cmd WebHookCommand
+
+	err := json.NewDecoder(r.Body).Decode(&cmd)
+
+	return cmd, err
 }
 
-type ObjectAttributes struct {
-	SourceProjectId int    `json:"source_project_id"`
-	Action          string `json:"action"`
-	IID             int    `json:"iid"`
-}
+func handleError(w http.ResponseWriter, msg string, err error) {
+	log.Printf("[error] %v: %v", msg, err)
 
-func (attrs ObjectAttributes) isOpen() bool {
-	return attrs.Action == "" || attrs.Action == "open"
-}
-
-type MergeRequestPayload struct {
-	ObjectAttributes ObjectAttributes `json:"object_attributes"`
-}
-
-func NewMergeRequestPayload(r *http.Request) (MergeRequestPayload, error) {
-	var payload MergeRequestPayload
-
-	err := json.NewDecoder(r.Body).Decode(&payload)
-
-	return payload, err
-}
-
-func (p MergeRequestPayload) createLinkIssueCommand() core.LinkIssueCommand {
-	cmd := core.LinkIssueCommand{
-		ProjectID: fmt.Sprint(p.ObjectAttributes.SourceProjectId),
-		ID:        p.ObjectAttributes.IID,
-	}
-	return cmd
-}
-
-func (s Server) handleMergeRequest(w http.ResponseWriter, r *http.Request) {
-	payload, err := NewMergeRequestPayload(r)
-
-	if err != nil {
-		log.Printf("[error] can't parse payload: %v", err)
-
-		http.Error(w, fmt.Sprintf("can't parse paylod: %v", err), 500)
-
-		return
-	}
-
-	if !payload.ObjectAttributes.isOpen() {
-		fmt.Println("=== skip ===")
-		return
-	}
-
-	err = s.MergeService.LinkIssue(payload.createLinkIssueCommand())
-
-	if err != nil {
-		log.Printf("[error] can't link issue: %v", err)
-
-		http.Error(w, fmt.Sprintf("can't link issue: %v", err), 500)
-
-		return
-
-	}
+	http.Error(w, fmt.Sprintf("%v: %v", msg, err), 500)
 }
 
 func (s Server) handleStatus(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintln(w, "ok")
+}
+
+func (s Server) handleMergeRequest(w http.ResponseWriter, r *http.Request) {
+	command, err := newWebhookCommand(r)
+
+	if err != nil {
+		handleError(w, "can't parse payload", err)
+		return
+	}
+
+	err = s.WebhookCommandHandler.Handle(command)
+
+	if err != nil {
+		handleError(w, "can't link issue", err)
+		return
+	}
+}
+
+type Server struct {
+	Port                  int
+	WebhookCommandHandler IWebhookCommandHandler
 }
 
 func (s Server) Start() {
