@@ -27,6 +27,12 @@ type WebhookCommandHandler struct {
 	mergeService core.MergeService
 }
 
+func NewWebhookCommandHandler(ms core.MergeService) WebhookCommandHandler {
+	return WebhookCommandHandler{
+		mergeService: ms,
+	}
+}
+
 func (h WebhookCommandHandler) Handle(c WebHookCommand) error {
 	if c.isNewMergeRequest() {
 		return h.handleNewMergeRequest(c)
