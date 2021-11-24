@@ -21,9 +21,11 @@ func main() {
 		MergeStore: store,
 	}
 
+	webhookCommandHandler := adapters.NewWebhookCommandHandler(mergeService)
+
 	server := adapters.Server{
-		MergeService: mergeService,
-		Port:         9191,
+		WebhookCommandHandler: webhookCommandHandler,
+		Port:                  9191,
 	}
 
 	server.Start()
