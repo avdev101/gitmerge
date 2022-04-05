@@ -9,7 +9,7 @@ type MergeRequest struct {
 	ProjectID    int `json:"project_id"`
 	ID           int `json:"iid"`
 	Description  string
-	SourceBranch string
+	SourceBranch string `json:"source_branch"`
 }
 
 func (m MergeRequest) getIssueId() string {
