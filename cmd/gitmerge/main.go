@@ -8,7 +8,7 @@ import (
 )
 
 var basePath = flag.String("base_path", "https://gitlab.com/api/v4", "api base path")
-var token = flag.String("token", "_NA2XQAwwJDksNKxYLzE", "api token")
+var token = flag.String("token", "", "api token")
 var port = flag.Int("port", 9191, "listen port")
 
 func main() {
